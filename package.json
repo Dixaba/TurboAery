@@ -23,6 +23,9 @@
     "url": "https://github.com/Dixaba/TurboAery/issues"
   },
   "homepage": "https://github.com/Dixaba/TurboAery#readme",
+  "eslintConfig": {
+    "extends": "react-app"
+  },
   "dependencies": {
     "@types/jest": "24.0.13",
     "@types/node": "12.0.2",
