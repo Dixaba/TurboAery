@@ -1,0 +1,50 @@
+{
+  "name": "turboaery",
+  "version": "0.0.1",
+  "description": "Assistant tool for League players",
+  "main": "public/Main.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron-start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dixaba/TurboAery.git"
+  },
+  "author": "Dixaba <dixaba@yandex.ru> (https://github.com/Dixaba)",
+  "contributors": [
+    "Arseny Kruglikov <kruglikov.arseny@gmail.com> (https://github.com/arsenykruglikov)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dixaba/TurboAery/issues"
+  },
+  "homepage": "https://github.com/Dixaba/TurboAery#readme",
+  "dependencies": {
+    "@types/jest": "24.0.13",
+    "@types/node": "12.0.2",
+    "@types/react": "16.8.18",
+    "@types/react-dom": "16.8.4",
+    "lcu-connector": "^2.1.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-scripts": "3.0.1",
+    "typescript": "3.4.5"
+  },
+  "devDependencies": {
+    "electron": "^5.0.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version"
+    ]
+  }
+}
