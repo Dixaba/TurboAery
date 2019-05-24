@@ -2,14 +2,33 @@
   "name": "turboaery",
   "version": "0.0.1",
   "description": "Assistant tool for League players",
-  "main": "public/Main.js",
+  "main": "public/electron.js",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-start": "electron ."
+    "pack": "electron-builder -wm --dir",
+    "dist": "electron-builder -wm",
+    "electron-dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\""
   },
+  "build": {
+    "appId": "com.electron.electron-with-create-react-app",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "zip"
+    },
+    "mac": {
+      "target": "zip"
+    },
+    "directories": {
+      "buildResources": "public"
+    }
+  },
+  "homepage": "./",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Dixaba/TurboAery.git"
@@ -22,7 +41,6 @@
   "bugs": {
     "url": "https://github.com/Dixaba/TurboAery/issues"
   },
-  "homepage": "https://github.com/Dixaba/TurboAery#readme",
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -31,6 +49,7 @@
     "@types/node": "12.0.2",
     "@types/react": "16.8.18",
     "@types/react-dom": "16.8.4",
+    "electron-is-dev": "^1.1.0",
     "lcu-connector": "^2.1.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -38,7 +57,10 @@
     "typescript": "3.4.5"
   },
   "devDependencies": {
-    "electron": "^5.0.2"
+    "concurrently": "^4.1.0",
+    "electron": "^5.0.2",
+    "electron-builder": "^20.40.2",
+    "wait-on": "^3.2.0"
   },
   "browserslist": {
     "production": [
