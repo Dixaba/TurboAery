@@ -1,21 +1,15 @@
-var exec = require('child_process').exec;
+const { exec } = require('child_process');
 
-var command_line = 'electron ./app/';
+let commandLine;
 
-if(process.platform === 'win32') {  
-  command_line = 'concurrently "set BROWSER=none&& npm start" "wait-on http://localhost:3000 && electron ."';
+if (process.platform === 'win32') {
+  commandLine = 'concurrently "set BROWSER=none&& npm start" "wait-on http://localhost:3000 && electron ."';
 } else {
-  command_line = 'concurrently "BROWSER=none npm start" "wait-on http://localhost:3000 && electron ."';
+  commandLine = 'concurrently "BROWSER=none npm start" "wait-on http://localhost:3000 && electron ."';
 }
 
-var command = exec(command_line);
+const command = exec(commandLine);
 
-command.stdout.on('data', function(data) {
-  process.stdout.write(data);
-});
-command.stderr.on('data', function(data) {
-  process.stderr.write(data);
-});
-command.on('error', function(err) {
-  process.stderr.write(err);
-});
+command.stdout.on('data', process.stdout.write);
+command.stderr.on('data', process.stderr.write);
+command.on('error', process.stderr.write);

@@ -28,7 +28,7 @@ steps:
       -v ~/.cache/electron:/root/.cache/electron 
       -v ~/.cache/electron-builder:/root/.cache/electron-builder 
       electronuserland/builder:wine 
-      /bin/bash -c "yarn && yarn build && yarn dist"
+      /bin/bash -c "yarn && yarn dist"
     workingDirectory: '$(Build.SourcesDirectory)'
   displayName: 'Build and create dist archives'
 

@@ -8,8 +8,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "pack": "electron-builder -wm --dir",
-    "dist": "electron-builder -wm",
+    "pack": "react-scripts build && electron-builder -wm --dir",
+    "dist": "react-scripts build && electron-builder -wm",
     "electron-dev": "node scripts/electron-dev.js"
   },
   "build": {

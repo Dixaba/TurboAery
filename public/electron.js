@@ -6,7 +6,7 @@ const isDev = require('electron-is-dev');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let win;
 
 const { ipcMain } = require('electron')
 ipcMain.on('asynchronous-message', (event, arg) => {
@@ -19,7 +19,7 @@ ipcMain.on('synchronous-message', (event, arg) => {
   event.returnValue = 'pong'
 })
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
@@ -32,7 +32,9 @@ function createWindow () {
   win.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
 
   // Open the DevTools.
-  win.webContents.openDevTools()
+  if (isDev) {
+    win.webContents.openDevTools()
+  }
 
   // Emitted when the window is closed.
   win.on('closed', () => {
