@@ -8,6 +8,9 @@ const isDev = require('electron-is-dev');
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
 
+// Allow Electron work with unsafe SSL certificates
+app.commandLine.appendSwitch('--ignore-certificate-errors');
+
 const { ipcMain } = require('electron')
 ipcMain.on('asynchronous-message', (event, arg) => {
   console.log(arg) // prints "ping"
@@ -25,7 +28,9 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      // TODO: find better way to handle CORS errors
+      webSecurity: false
     }
   })
 

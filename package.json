@@ -1,15 +1,15 @@
 {
   "name": "turboaery",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Assistant tool for League players",
   "main": "public/electron.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "pack": "react-scripts build && electron-builder -wm --dir",
-    "dist": "react-scripts build && electron-builder -wm",
+    "start": "rescripts start",
+    "build": "rescripts build",
+    "test": "rescripts test",
+    "eject": "rescripts eject",
+    "pack": "rescripts build && electron-builder -wm --dir",
+    "dist": "rescripts build && electron-builder -wm",
     "electron-dev": "node scripts/electron-dev.js"
   },
   "build": {
@@ -49,6 +49,7 @@
     "@types/node": "12.0.2",
     "@types/react": "16.8.18",
     "@types/react-dom": "16.8.4",
+    "axios": "^0.18.0",
     "electron-is-dev": "^1.1.0",
     "lcu-connector": "^2.1.2",
     "react": "^16.8.6",
@@ -57,10 +58,13 @@
     "typescript": "3.4.5"
   },
   "devDependencies": {
+    "@rescripts/cli": "0.0.10",
+    "@rescripts/rescript-env": "0.0.10",
     "concurrently": "^4.1.0",
     "electron": "^5.0.2",
     "electron-builder": "^20.40.2",
-    "wait-on": "^3.2.0"
+    "wait-on": "^3.2.0",
+    "webpack-node-externals": "^1.7.2"
   },
   "browserslist": {
     "production": [
