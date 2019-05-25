@@ -10,7 +10,7 @@
     "eject": "react-scripts eject",
     "pack": "electron-builder -wm --dir",
     "dist": "electron-builder -wm",
-    "electron-dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\""
+    "electron-dev": "node scripts/electron-dev.js"
   },
   "build": {
     "appId": "com.electron.electron-with-create-react-app",
