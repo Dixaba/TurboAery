@@ -4,12 +4,12 @@
   "description": "Assistant tool for League players",
   "main": "public/electron.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "pack": "react-scripts build && electron-builder -wm --dir",
-    "dist": "react-scripts build && electron-builder -wm",
+    "start": "rescripts start",
+    "build": "rescripts build",
+    "test": "rescripts test",
+    "eject": "rescripts eject",
+    "pack": "rescripts build && electron-builder -wm --dir",
+    "dist": "rescripts build && electron-builder -wm",
     "electron-dev": "node scripts/electron-dev.js"
   },
   "build": {
@@ -57,6 +57,8 @@
     "typescript": "3.4.5"
   },
   "devDependencies": {
+    "@rescripts/cli": "0.0.10",
+    "@rescripts/rescript-env": "0.0.10",
     "concurrently": "^4.1.0",
     "electron": "^5.0.2",
     "electron-builder": "^20.40.2",

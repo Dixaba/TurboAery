@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo, SyntheticEvent, useEffect } from
 import Form from '../Form';
 import Input from '../Input';
 import Button from '../Button';
+const { ipcRenderer } = require('electron');
 
 const App: React.FunctionComponent = () => {
 
@@ -9,11 +10,10 @@ const App: React.FunctionComponent = () => {
   const [secondname, setSecondname] = useState('');
 
   useEffect(() => {
-    // @ts-ignore
-    const { ipcRenderer } = window.require('electron');
+
     console.log(ipcRenderer.sendSync('synchronous-message', 'ping')) // prints "pong"
-    // @ts-ignore
-    ipcRenderer.on('asynchronous-reply', (event: Electron.Event, arg: any[]) => {
+
+    ipcRenderer.on('asynchronous-reply', (event: Event, arg: any[]) => {
       console.log(event, arg) // prints "pong"
     })
     ipcRenderer.send('asynchronous-message', 'ping')
