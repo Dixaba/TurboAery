@@ -3,7 +3,10 @@
 
 Assistant tool for League players
 
+## Riot API key installation
 
-### How to run
+Place Riot API key inside `public/apikey.js` before build
 
-```npm run electron-dev```
+## How to run
+
+`npm run electron-dev`
