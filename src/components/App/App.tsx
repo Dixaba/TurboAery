@@ -1,26 +1,33 @@
 import React, { useState, useEffect } from 'react';
-const LCUConnector = require('lcu-connector');
+import axios, { AxiosResponse, AxiosError } from 'axios';
 
 const App: React.FunctionComponent = () => {
 
-  const [LCUData, setLCUData] = useState(null);
+  const [LCUData, setLCUData] = useState<any>(null);
 
   useEffect(() => {
-    const connector = new LCUConnector();
+    let region: string;
 
-    connector.on('connect', (data: any) => {
-      setLCUData(data)
-    });
+    axios.get(`/lol-platform-config/v1/namespaces/LoginDataPacket/platformId`)
+      .then((res: AxiosResponse<string>) => {
+        region = res.data;
 
-    // Start listening for the LCU client
-    connector.start();
+        if (region !== 'KR') {
+          setLCUData(region);
+        } else {
+          setLCUData('Korea is forbidden');
+        }
+      })
+      .catch((err: AxiosError) => {
+        console.warn(err);
+      })
 
   }, []);
 
   return (
     <>
       <pre>
-        {LCUData ? JSON.stringify(LCUData) : 'Waiting for connection'}
+        {LCUData ? LCUData : 'Waiting for connection'}
       </pre>
     </>
   );
