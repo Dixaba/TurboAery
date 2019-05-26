@@ -1,6 +1,4 @@
 const { app, BrowserWindow } = require('electron')
-
-
 const path = require('path');
 const isDev = require('electron-is-dev');
 const os = require('os')
@@ -25,9 +23,14 @@ function createWindow() {
     }
   })
 
-  BrowserWindow.addDevToolsExtension(
-    path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0')
-  )
+  try {
+    BrowserWindow.addDevToolsExtension(
+      path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0')
+    )
+  }
+  catch {
+    console.warn('React Devtools not found')
+  }
 
   win.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
 
