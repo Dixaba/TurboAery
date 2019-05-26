@@ -1,13 +1,18 @@
 import axios from 'axios';
+import memoize from 'lodash/memoize';
 
 // TODO: extract interfaces to external file
+
+type TLootRarity = '' | 'DEFAULT' | 'EPIC' | 'LEGENDARY' | 'MYTHIC' | 'ULTIMATE';
+
+type TLootDisplayCategories = '' | 'CHAMPION' | 'CHEST' | 'EMOTE' | 'SKIN' | 'SUMMONERICON' | 'WARDSKIN';
 
 interface ILootItem {
   asset: string;
   count: number;
   disenchantLootName: string;
   disenchantValue: number;
-  displayCategories: string;
+  displayCategories: TLootDisplayCategories;
   expiryTime: number;
   isNew: boolean;
   isRental: boolean;
@@ -21,7 +26,7 @@ interface ILootItem {
   lootName: string;
   parentItemStatus: string;
   parentStoreItemId: number;
-  rarity: string;
+  rarity: TLootRarity;
   redeemableStatus: string;
   refId: string;
   rentalGames: number;
@@ -82,10 +87,24 @@ interface ILootRecipe {
   requiredTokens: string
 }
 
+interface ILootListByCategory {
+  '': ILootItem[];
+  CHAMPION: ILootItem[];
+  CHEST: ILootItem[];
+  EMOTE: ILootItem[];
+  SKIN: ILootItem[];
+  SUMMONERICON: ILootItem[];
+  WARDSKIN: ILootItem[];
+  [index: string]: ILootItem[];
+}
+
 interface ILolLootManipulator {
   lootList: ILootItem[];
-  getLootList(): Promise<ILootItem[]>;
-  getRecipesList(lootId: string): Promise<ILootRecipe[]>
+  getLootList(refresh: boolean): Promise<ILootItem[]>;
+  getRecipesList(lootId: string): Promise<ILootRecipe[]>;
+  getLootListByCategory(): ILootListByCategory;
+  getRegion(): void;
+  setConfig(data: ILCUConnectionData): void;
 }
 
 interface IRequestConfig {
@@ -96,37 +115,71 @@ interface IRequestConfig {
   baseURL: string;
 }
 
+interface ILCUConnectionData {
+  protocol: 'https';
+  address: '127.0.0.1';
+  port: number;
+  username: 'riot';
+  password: string;
+};
+
 class LolLootManipulator implements ILolLootManipulator {
   public lootList: ILootItem[] = [];
-  private requestConfig: IRequestConfig = {
-    auth: {
-      username: '',
-      password: ''
-    },
-    baseURL: ''
-  }
+  private requestConfig?: IRequestConfig;
 
-  // TODO: extract platformId checking from the class
-  constructor(config: IRequestConfig) {
-    this.requestConfig = config
-  }
-
-  getLootList = async (): Promise<ILootItem[]> => {
-    try {
-      const response = await axios.get<ILootItem[]>('/player-loot', this.requestConfig);
-      this.lootList = response.data;
+  setConfig = (data: ILCUConnectionData) => {
+    const { username, password, protocol, address, port } = data;
+    this.requestConfig = {
+      auth: {
+        username,
+        password
+      },
+      baseURL: `${protocol}://${address}:${port}`
     }
-    catch (error) {
-      throw new Error(error.message);
+  }
+
+  getRegion = memoize(async () => {
+    const response = await axios.get<string>('/lol-platform-config/v1/namespaces/LoginDataPacket/platformId', this.requestConfig);
+    const region = response.data;
+    if (region === 'KR')
+      throw new Error('Korea is forbidden.' +
+      '\nFor more information visit ' +
+      'https://www.riotgames.com/en/DevRel/changes-to-the-lcu-api-policy');
+  })
+
+  getLootList = async (refresh = true): Promise<ILootItem[]> => {
+    if (refresh) {
+      try {
+        this.lootList = (await axios.get<ILootItem[]>('/lol-loot/v1/player-loot', this.requestConfig)).data;
+      }
+      catch (error) {
+        throw new Error(error.message);
+      }
     }
     return this.lootList;
   }
 
-  getRecipesList = async (lootId: string): Promise<ILootRecipe[]> => {
+  getLootListByCategory = () => {
+    const result: ILootListByCategory = {
+      '': [],
+      CHAMPION: [],
+      CHEST: [],
+      EMOTE: [],
+      SKIN: [],
+      SUMMONERICON: [],
+      WARDSKIN: []
+    };
+    return this.lootList.reduce((acc, item) => {
+      acc[item.displayCategories].push(item)
+      return acc;
+    }, result);
+  }
+
+  getRecipesList = memoize(async (lootId: string): Promise<ILootRecipe[]> => {
     let fullRecipeData = [];
     try {
-      const recipes = await axios.get<ILootRecipe[]>(`/recipes/initial-item/${lootId}`, this.requestConfig);
-      const contextMenu = await axios.get<ILootRecipe[]>(`/player-loot/${lootId}/context-menu	`, this.requestConfig);
+      const recipes = await axios.get<ILootRecipe[]>(`/lol-loot/v1/recipes/initial-item/${lootId}`, this.requestConfig);
+      const contextMenu = await axios.get<ILootRecipe[]>(`/lol-loot/v1/player-loot/${lootId}/context-menu	`, this.requestConfig);
       for (let i = 0; i < recipes.data.length; i++) {
         fullRecipeData[i] = { ...recipes.data[i], ...contextMenu.data[i] }
       }
@@ -135,7 +188,9 @@ class LolLootManipulator implements ILolLootManipulator {
       throw new Error(error.message);
     }
     return fullRecipeData;
-  }
+  });
 }
 
-export default LolLootManipulator;
+const lolLootManipulator = new LolLootManipulator();
+
+export default lolLootManipulator;

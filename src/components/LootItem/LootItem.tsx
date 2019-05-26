@@ -43,6 +43,7 @@ const LootItem: FunctionComponent<PropsWithChildren<ILootItemProps>> = (props) =
 
   const handleClick = () => {
     console.log(props.lootId);
+    console.log(props);
     props.onClick(props.lootId)
   }
 

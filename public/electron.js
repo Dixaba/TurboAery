@@ -32,6 +32,8 @@ function createWindow() {
     console.warn('React Devtools not found')
   }
 
+  win.maximize();
+
   win.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
 
   // Open the DevTools.

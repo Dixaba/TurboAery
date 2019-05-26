@@ -1,33 +1,11 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import axios, { AxiosResponse } from 'axios';
-import LolLootManipulator from '../../lolLootManipulator';
+import lolLootManipulator from '../../lolLootManipulator';
 import LootItem from '../LootItem';
 const LCUConnector = require('lcu-connector');
-
-interface ILCUConnectionData {
-  protocol: 'https';
-  address: '127.0.0.1';
-  port: number;
-  username: 'riot';
-  password: string;
-};
 
 // TODO: refactor App
 
 const connector = new LCUConnector();
-
-let manipulator: any = null;
-
-const splitByCategory = (list: any[]) => {
-  return list.reduce((acc, item) => {
-    if (item.displayCategories in acc) {
-      acc[item.displayCategories].push(item)
-    } else {
-      acc[item.displayCategories] = [item]
-    }
-    return acc;
-  }, {})
-};
 
 const renderList = (list: any[], fn: Function) => list.map(item => <LootItem key={item.lootId} {...item} onClick={fn} />);
 
@@ -40,7 +18,7 @@ const renderCategories = (list: any[], fn: Function) => Object.entries(list).map
 
 const renderRecipeList = (list: any[]) => {
   console.log(...list);
-  return list.map((item: any) => (<pre key={JSON.stringify(item)}>{item.recipeName} {JSON.stringify(item.outputs)} {JSON.stringify(item.slots)}</pre>))
+  return list.map((item: any) => (<pre key={JSON.stringify(item)}>{item.recipeName}<br />{JSON.stringify(item.outputs)}<br />{JSON.stringify(item.slots)}<br /><br /></pre>))
 };
 
 
@@ -50,35 +28,18 @@ const App: React.FunctionComponent = () => {
   const [recipesList, setRecipesList] = useState<any>({});
 
   useEffect(() => {
-    connector.on('connect', (data: ILCUConnectionData) => {
-      const { username, password, protocol, address, port } = data;
-      const requestConfig = {
-        auth: {
-          username,
-          password
-        }
-      }
-
-      axios.get(`${protocol}://${address}:${port}/lol-platform-config/v1/namespaces/LoginDataPacket/platformId`, requestConfig)
-        .then(async (response: AxiosResponse<string>) => {
-          const platformId = response.data;
-          if (platformId === 'KR') {
-            throw new Error('Korea is forbidden.' +
-              '\nFor more information visit ' +
-              'https://www.riotgames.com/en/DevRel/changes-to-the-lcu-api-policy');
-          }
-
-          manipulator = new LolLootManipulator({
-            baseURL: `${protocol}://${address}:${port}/lol-loot/v1`,
-            ...requestConfig
-          });
-
-          const lootList = await manipulator.getLootList();
-          const lootListByCategory = splitByCategory(lootList);
-          console.log(lootListByCategory);
+    connector.on('connect', (data: any) => {
+      lolLootManipulator.setConfig(data);
+      lolLootManipulator.getRegion()
+        .then(async () => {
+          await lolLootManipulator.getLootList();
+          const lootListByCategory = lolLootManipulator.getLootListByCategory();
 
           setLootList(lootListByCategory);
         })
+        .catch((error) => {
+          console.log(error);
+        });
     });
     connector.start();
     return () => {
@@ -87,7 +48,7 @@ const App: React.FunctionComponent = () => {
   }, []);
 
   const getRecipes = async (lootId: string) => {
-    const recipesList = await manipulator.getRecipesList(lootId);
+    const recipesList = await lolLootManipulator.getRecipesList(lootId);
     setRecipesList(recipesList);
   }
 
@@ -102,8 +63,10 @@ const App: React.FunctionComponent = () => {
       </pre>
       <br />
       <br />
-      <h4>Recipes</h4>
-      {Object.keys(recipesList).length ? <>{renderRecipeList(recipesList)}</> : 'Waiting for list of recipes'}
+      <pre>
+        <h4>RECIPES</h4>
+        {Object.keys(recipesList).length ? <>{renderRecipeList(recipesList)}</> : 'Waiting for list of recipes'}
+      </pre>
     </>
   );
 }
