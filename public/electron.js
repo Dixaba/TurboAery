@@ -3,6 +3,7 @@ const { app, BrowserWindow } = require('electron')
 
 const path = require('path');
 const isDev = require('electron-is-dev');
+const os = require('os')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -11,16 +12,6 @@ let win;
 // Allow Electron work with unsafe SSL certificates
 app.commandLine.appendSwitch('--ignore-certificate-errors');
 
-const { ipcMain } = require('electron')
-ipcMain.on('asynchronous-message', (event, arg) => {
-  console.log(arg) // prints "ping"
-  event.reply('asynchronous-reply', 'pong')
-})
-
-ipcMain.on('synchronous-message', (event, arg) => {
-  console.log(arg) // prints "ping"
-  event.returnValue = 'pong'
-})
 
 function createWindow() {
   // Create the browser window.
@@ -33,6 +24,10 @@ function createWindow() {
       webSecurity: false
     }
   })
+
+  BrowserWindow.addDevToolsExtension(
+    path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0')
+  )
 
   win.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
 

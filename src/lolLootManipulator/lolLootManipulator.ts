@@ -69,6 +69,17 @@ interface ILootRecipe {
   requirementText: string;
   slots: ILootRecipeSlots[];
   type: string;
+  actionType: string,
+  enabled: boolean,
+  essenceQuantity: number,
+  essenceType: string,
+  name: string,
+  recipeContextMenuAction: string,
+  recipeDescription: string,
+  requiredOthers: string,
+  requiredOthersCount: number,
+  requiredOthersName: string,
+  requiredTokens: string
 }
 
 interface ILolLootManipulator {
@@ -112,15 +123,18 @@ class LolLootManipulator implements ILolLootManipulator {
   }
 
   getRecipesList = async (lootId: string): Promise<ILootRecipe[]> => {
-    let ret = [];
+    let fullRecipeData = [];
     try {
-      const response = await axios.get<ILootRecipe[]>(`/recipes/initial-item/${lootId}`, this.requestConfig);
-      ret = response.data;
+      const recipes = await axios.get<ILootRecipe[]>(`/recipes/initial-item/${lootId}`, this.requestConfig);
+      const contextMenu = await axios.get<ILootRecipe[]>(`/player-loot/${lootId}/context-menu	`, this.requestConfig);
+      for (let i = 0; i < recipes.data.length; i++) {
+        fullRecipeData[i] = { ...recipes.data[i], ...contextMenu.data[i] }
+      }
     }
     catch (error) {
       throw new Error(error.message);
     }
-    return ret;
+    return fullRecipeData;
   }
 }
 

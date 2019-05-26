@@ -102,6 +102,7 @@ const App: React.FunctionComponent = () => {
       </pre>
       <br />
       <br />
+      <h4>Recipes</h4>
       {Object.keys(recipesList).length ? <>{renderRecipeList(recipesList)}</> : 'Waiting for list of recipes'}
     </>
   );
