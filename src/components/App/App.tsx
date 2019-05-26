@@ -20,8 +20,11 @@ let manipulator: any = null;
 
 const splitByCategory = (list: any[]) => {
   return list.reduce((acc, item) => {
-    if (item.displayCategories !== '') {
-      acc[item.displayCategories] = acc[item.displayCategories] ? acc[item.displayCategories].push(item) : [item];
+    debugger;
+    if (item.displayCategories in acc) {
+      acc[item.displayCategories].push(item)
+    } else {
+      acc[item.displayCategories] = [item]
     }
     return acc;
   }, {})
@@ -36,7 +39,7 @@ const renderCategories = (list: any[], fn: Function) => Object.entries(list).map
   </Fragment>
 ))
 
-const renderRecipeList = (list: any[]) => {  
+const renderRecipeList = (list: any[]) => {
   return list.map((item: any) => (<pre key={JSON.stringify(item)}>{item.recipeName} {JSON.stringify(item.outputs)}</pre>))
 };
 
@@ -72,6 +75,8 @@ const App: React.FunctionComponent = () => {
 
           const lootList = await manipulator.getLootList();
           const lootListByCategory = splitByCategory(lootList);
+          console.log(lootListByCategory);
+
           setLootList(lootListByCategory);
         })
     });
