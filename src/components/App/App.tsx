@@ -20,7 +20,6 @@ let manipulator: any = null;
 
 const splitByCategory = (list: any[]) => {
   return list.reduce((acc, item) => {
-    debugger;
     if (item.displayCategories in acc) {
       acc[item.displayCategories].push(item)
     } else {
@@ -40,7 +39,8 @@ const renderCategories = (list: any[], fn: Function) => Object.entries(list).map
 ))
 
 const renderRecipeList = (list: any[]) => {
-  return list.map((item: any) => (<pre key={JSON.stringify(item)}>{item.recipeName} {JSON.stringify(item.outputs)}</pre>))
+  console.log(...list);
+  return list.map((item: any) => (<pre key={JSON.stringify(item)}>{item.recipeName} {JSON.stringify(item.outputs)} {JSON.stringify(item.slots)}</pre>))
 };
 
 
