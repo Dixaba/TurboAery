@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios, { AxiosResponse, AxiosError } from 'axios';
+const { remote } = require('electron');
+const apikey = remote.getGlobal('apikey');
+
+console.log(apikey); // it works
 
 const App: React.FunctionComponent = () => {
 
