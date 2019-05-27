@@ -1,5 +1,6 @@
 import axios from 'axios';
 import memoize from 'lodash/memoize';
+const { Kayn } = require('kayn');
 
 // TODO: extract interfaces to external file
 
@@ -104,7 +105,7 @@ interface ILolLootManipulator {
   getRecipesList(lootId: string): Promise<ILootRecipe[]>;
   getLootListByCategory(): ILootListByCategory;
   getRegion(): void;
-  setConfig(data: ILCUConnectionData): void;
+  setConfig(data: ILCUConnectionData, riotAPIKey: string): void;
 }
 
 interface IRequestConfig {
@@ -126,8 +127,10 @@ interface ILCUConnectionData {
 class LolLootManipulator implements ILolLootManipulator {
   public lootList: ILootItem[] = [];
   private requestConfig?: IRequestConfig;
+  private riotAPIKey?: string;
+  private kayn: any = null;
 
-  setConfig = (data: ILCUConnectionData) => {
+  setConfig = (data: ILCUConnectionData, riotAPIConfig: string) => {
     const { username, password, protocol, address, port } = data;
     this.requestConfig = {
       auth: {
@@ -136,6 +139,7 @@ class LolLootManipulator implements ILolLootManipulator {
       },
       baseURL: `${protocol}://${address}:${port}`
     }
+    this.riotAPIKey = riotAPIConfig;
   }
 
   getRegion = memoize(async () => {
@@ -143,8 +147,14 @@ class LolLootManipulator implements ILolLootManipulator {
     const region = response.data;
     if (region === 'KR')
       throw new Error('Korea is forbidden.' +
-      '\nFor more information visit ' +
-      'https://www.riotgames.com/en/DevRel/changes-to-the-lcu-api-policy');
+        '\nFor more information visit ' +
+        'https://www.riotgames.com/en/DevRel/changes-to-the-lcu-api-policy');
+    this.kayn = Kayn(this.riotAPIKey)({
+      region: region.toLocaleLowerCase(),
+      locale: 'ru_RU', // hardcoded for now TODO: get locale from region string
+    });
+    this.kayn.DDragon.Champion.getDataById('Tristana') // test kayn and DDragon
+      .callback(console.log)
   })
 
   getLootList = async (refresh = true): Promise<ILootItem[]> => {

@@ -29,7 +29,7 @@ const App: React.FunctionComponent = () => {
 
   useEffect(() => {
     connector.on('connect', (data: any) => {
-      lolLootManipulator.setConfig(data);
+      lolLootManipulator.setConfig(data, apikey);
       lolLootManipulator.getRegion()
         .then(async () => {
           await lolLootManipulator.getLootList();

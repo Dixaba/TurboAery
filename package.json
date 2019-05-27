@@ -52,6 +52,7 @@
     "@types/react-dom": "16.8.4",
     "axios": "^0.18.0",
     "electron-is-dev": "^1.1.0",
+    "kayn": "^0.9.8",
     "lcu-connector": "^2.1.2",
     "lodash": "^4.17.11",
     "react": "^16.8.6",
