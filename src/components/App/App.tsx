@@ -1,7 +1,9 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import lolLootManipulator from '../../lolLootManipulator';
-import LootItem from '../LootItem';
-const LCUConnector = require('lcu-connector');
+import React, { useState, useEffect } from 'react';
+import axios, { AxiosResponse, AxiosError } from 'axios';
+const { remote } = require('electron');
+const apikey = remote.getGlobal('apikey');
+
+console.log(apikey); // it works
 
 // TODO: refactor App
 
@@ -20,7 +22,6 @@ const renderRecipeList = (list: any[]) => {
   console.log(...list);
   return list.map((item: any) => (<pre key={JSON.stringify(item)}>{item.recipeName}<br />{JSON.stringify(item.outputs)}<br />{JSON.stringify(item.slots)}<br /><br /></pre>))
 };
-
 
 const App: React.FunctionComponent = () => {
 
