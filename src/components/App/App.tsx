@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import React, { useState, useEffect, Fragment } from 'react';
+import LootItem from '../LootItem';
+import lolLootManipulator from '../../lolLootManipulator';
+const LCUConnector = require('lcu-connector');
 const { remote } = require('electron');
 const apikey = remote.getGlobal('apikey');
 
