@@ -1,7 +1,9 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path');
 const isDev = require('electron-is-dev');
+const os = require('os')
 let apikey;
+
 try {
   apikey = require('./apikey');
 }
@@ -17,16 +19,6 @@ let win;
 // Allow Electron work with unsafe SSL certificates
 app.commandLine.appendSwitch('--ignore-certificate-errors');
 
-const { ipcMain } = require('electron')
-ipcMain.on('asynchronous-message', (event, arg) => {
-  console.log(arg) // prints "ping"
-  event.reply('asynchronous-reply', 'pong')
-})
-
-ipcMain.on('synchronous-message', (event, arg) => {
-  console.log(arg) // prints "ping"
-  event.returnValue = 'pong'
-})
 
 function createWindow() {
   // Create the browser window.
@@ -39,6 +31,17 @@ function createWindow() {
       webSecurity: false
     }
   })
+
+  try {
+    BrowserWindow.addDevToolsExtension(
+      path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0')
+    )
+  }
+  catch {
+    console.warn('React Devtools not found')
+  }
+
+  win.maximize();
 
   global.apikey = apikey;
 
