@@ -1,11 +1,13 @@
 const { exec } = require('child_process');
 
+const { PORT = 3000 } = process.env;
+
 let commandLine;
 
 if (process.platform === 'win32') {
-  commandLine = 'concurrently "set BROWSER=none&& npm start" "wait-on http://localhost:3000 && electron ."';
+  commandLine = `concurrently "set BROWSER=none PORT=${PORT}&& npm start" "wait-on http://localhost:${PORT} && electron ."`;
 } else {
-  commandLine = 'concurrently "BROWSER=none npm start" "wait-on http://localhost:3000 && electron ."';
+  commandLine = `concurrently "BROWSER=none PORT=${PORT} npm start" "wait-on http://localhost:${PORT} && electron ."`;
 }
 
 const command = exec(commandLine);
