@@ -1,58 +1,46 @@
-import React, { FunctionComponent, PropsWithChildren, memo } from 'react';
+import React, { FunctionComponent, PropsWithChildren, memo, useCallback } from 'react';
+
+type TLootRarity = '' | 'DEFAULT' | 'EPIC' | 'LEGENDARY' | 'MYTHIC' | 'ULTIMATE';
 
 interface ILootItemProps {
-  asset?: string;
-  count?: number;
-  disenchantLootName?: string;
-  disenchantValue?: number;
-  displayCategories?: string;
-  expiryTime?: number;
-  isNew?: boolean;
-  isRental?: boolean;
-  itemDesc?: string;
-  itemStatus?: string;
-  localizedDescription?: string;
-  localizedName?: string;
-  localizedRecipeSubtitle?: string;
-  localizedRecipeTitle?: string;
-  lootId?: string;
-  lootName?: string;
-  parentItemStatus?: string;
-  parentStoreItemId?: number;
-  rarity?: string;
-  redeemableStatus?: string;
-  refId?: string;
-  rentalGames?: number;
-  rentalSeconds?: number;
-  shadowPath?: string;
-  splashPath?: string;
-  storeItemId?: number;
-  tags?: string;
-  tilePath?: string;
-  type?: string;
-  upgradeEssenceName?: string;
-  upgradeEssenceValue?: number;
-  upgradeLootName?: string;
-  value?: number;
-  onClick(e: any): any;
+  itemDesc: string;
+  count: number;
+  itemStatus: string;
+  type: string;
+  value: number;
+  disenchantValue: number;
+  upgradeEssenceValue: number;
+  storeItemId: number;
+  parentItemStatus: string;
+  rarity: TLootRarity;
+  parentStoreItemId: number;
+  lootId: string;
+  onClick(e: string): string;
 }
 
 const style = { cursor: 'pointer' };
 
 const LootItem: FunctionComponent<PropsWithChildren<ILootItemProps>> = (props) => {
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     console.log(props.lootId);
     console.log(props);
     props.onClick(props.lootId)
-  }
+  }, [props])
 
   return (
     <div style={style} onClick={handleClick} >
-      <span>{props.itemDesc} </span>
-      <span>{props.disenchantValue} </span>
-      <span>{props.value} </span>
-      <span>{props.rarity}</span>
+      <span>{props.itemDesc}</span> |
+      <span>{props.count}</span> |
+      <span>{props.itemStatus}</span> |
+      <span>{props.type}</span> |
+      <span>{props.value}</span> |
+      <span>{props.disenchantValue}</span> |
+      <span>{props.upgradeEssenceValue}</span> |
+      <span>{props.storeItemId}</span> |
+      <span>{props.parentItemStatus}</span> |
+      <span>{props.rarity}</span> |
+      <span>{props.parentStoreItemId}</span>
     </div>
   )
 }

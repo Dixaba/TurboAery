@@ -1,6 +1,6 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import LootItem from '../LootItem';
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import lolLootManipulator from '../../lolLootManipulator';
+import LootCard from '../LootCard';
 const LCUConnector = require('lcu-connector');
 const { remote } = require('electron');
 const apikey = remote.getGlobal('apikey');
@@ -11,7 +11,7 @@ console.log(apikey); // it works
 
 const connector = new LCUConnector();
 
-const renderList = (list: any[], fn: Function) => list.map(item => <LootItem key={item.lootId} {...item} onClick={fn} />);
+const renderList = (list: any[], fn: Function) => list.map(item => <LootCard key={item.lootId} {...item} onClick={fn} />);
 
 const renderCategories = (list: any[], fn: Function) => Object.entries(list).map(item => (
   <Fragment key={item[0]}>
@@ -21,7 +21,7 @@ const renderCategories = (list: any[], fn: Function) => Object.entries(list).map
 ))
 
 const renderRecipeList = (list: any[]) => {
-  console.log(...list);
+  console.log('======= RecipeList =======', ...list);
   return list.map((item: any) => (<pre key={JSON.stringify(item)}>{item.recipeName}<br />{JSON.stringify(item.outputs)}<br />{JSON.stringify(item.slots)}<br /><br /></pre>))
 };
 
@@ -35,7 +35,12 @@ const App: React.FunctionComponent = () => {
       lolLootManipulator.setConfig(data, apikey);
       lolLootManipulator.getRegion()
         .then(async () => {
-          await lolLootManipulator.getLootList();
+          try {
+            await lolLootManipulator.getLootList();
+          }
+          catch (error) {
+            console.log(error);
+          }
           const lootListByCategory = lolLootManipulator.getLootListByCategory();
 
           setLootList(lootListByCategory);
@@ -50,14 +55,17 @@ const App: React.FunctionComponent = () => {
     }
   }, []);
 
-  const getRecipes = async (lootId: string) => {
-    const recipesList = await lolLootManipulator.getRecipesList(lootId);
-    setRecipesList(recipesList);
-  }
-
-  const handleClick = (event: any) => {
-    getRecipes(event);
-  }
+  const handleClick = useCallback(async (lootId: string) => {
+    let recipesListById;
+    try {
+      recipesListById = await lolLootManipulator.getRecipesList(lootId);
+      setRecipesList(recipesListById);
+    }
+    catch (error) {
+      console.warn(error)
+      setRecipesList({});
+    }
+  }, []);
 
   return (
     <>
