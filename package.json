@@ -10,7 +10,7 @@
     "eject": "rescripts eject",
     "pack": "rescripts build && electron-builder -wm --dir",
     "dist": "rescripts build && electron-builder -wm",
-    "electron-dev": "PORT=1337 node scripts/electron-dev.js"
+    "electron-dev": "node scripts/electron-dev.js"
   },
   "build": {
     "appId": "com.electron.electron-with-create-react-app",
