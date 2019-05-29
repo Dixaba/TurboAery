@@ -1,33 +1,82 @@
-import React, { useState, useEffect } from 'react';
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
+import lolLootManipulator from '../../lolLootManipulator';
+import LootCard from '../LootCard';
+const LCUConnector = require('lcu-connector');
+const { remote } = require('electron');
+const apikey = remote.getGlobal('apikey');
+
+console.log(apikey); // it works
+
+// TODO: refactor App
+
+const connector = new LCUConnector();
+
+const renderList = (list: any[], fn: Function) => list.map(item => <LootCard key={item.lootId} {...item} onClick={fn} />);
+
+const renderCategories = (list: any[], fn: Function) => Object.entries(list).map(item => (
+  <Fragment key={item[0]}>
+    <h4>{item[0]}</h4>
+    {renderList(item[1], fn)}
+  </Fragment>
+))
+
+const renderRecipeList = (list: any[]) => {
+  console.log('======= RecipeList =======', ...list);
+  return list.map((item: any) => (<pre key={JSON.stringify(item)}>{item.recipeName}<br />{JSON.stringify(item.outputs)}<br />{JSON.stringify(item.slots)}<br /><br /></pre>))
+};
 
 const App: React.FunctionComponent = () => {
 
-  const [LCUData, setLCUData] = useState<any>(null);
+  const [lootList, setLootList] = useState<any>(null);
+  const [recipesList, setRecipesList] = useState<any>({});
 
   useEffect(() => {
-    let region: string;
+    connector.on('connect', (data: any) => {
+      lolLootManipulator.setConfig(data, apikey);
+      lolLootManipulator.getRegion()
+        .then(async () => {
+          try {
+            await lolLootManipulator.getLootList();
+          }
+          catch (error) {
+            console.log(error);
+          }
+          const lootListByCategory = lolLootManipulator.getLootListByCategory();
 
-    axios.get(`/lol-platform-config/v1/namespaces/LoginDataPacket/platformId`)
-      .then((res: AxiosResponse<string>) => {
-        region = res.data;
+          setLootList(lootListByCategory);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+    connector.start();
+    return () => {
+      connector.stop();
+    }
+  }, []);
 
-        if (region !== 'KR') {
-          setLCUData(region);
-        } else {
-          setLCUData('Korea is forbidden');
-        }
-      })
-      .catch((err: AxiosError) => {
-        console.warn(err);
-      })
-
+  const handleClick = useCallback(async (lootId: string) => {
+    let recipesListById;
+    try {
+      recipesListById = await lolLootManipulator.getRecipesList(lootId);
+      setRecipesList(recipesListById);
+    }
+    catch (error) {
+      console.warn(error)
+      setRecipesList({});
+    }
   }, []);
 
   return (
     <>
       <pre>
-        {LCUData ? LCUData : 'Waiting for connection'}
+        {lootList ? <>{renderCategories(lootList, handleClick)}</> : 'Waiting for list of loot'}
+      </pre>
+      <br />
+      <br />
+      <pre>
+        <h4>RECIPES</h4>
+        {Object.keys(recipesList).length ? <>{renderRecipeList(recipesList)}</> : 'Waiting for list of recipes'}
       </pre>
     </>
   );

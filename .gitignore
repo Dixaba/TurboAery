@@ -1,3 +1,6 @@
+# API key shouldn't be in repo
+/public/apikey.js
+
 # Logs
 logs
 *.log
@@ -84,5 +87,3 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# API key shouldn't be in repo
-public/apikey.js
