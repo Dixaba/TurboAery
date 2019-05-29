@@ -4,12 +4,14 @@ const isDev = require('electron-is-dev');
 const os = require('os')
 let apikey;
 
+const { PORT = 3000 } = process.env;
+
 try {
   apikey = require('./apikey');
 }
 catch(error) {
   console.warn(error);
-  console.warn('Please povide correct apikey.js');
+  console.warn('Please provide correct apikey.js');
 }
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -38,14 +40,14 @@ function createWindow() {
     )
   }
   catch {
-    console.warn('React Devtools not found')
+    console.warn('React Dev tools not found')
   }
 
   win.maximize();
 
   global.apikey = apikey;
 
-  win.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
+  win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, '../build/index.html')}`);
 
   // Open the DevTools.
   if (isDev) {
