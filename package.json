@@ -10,7 +10,17 @@
     "eject": "rescripts eject",
     "pack": "rescripts build && electron-builder -wm --dir",
     "dist": "rescripts build && electron-builder -wm",
-    "electron-dev": "node scripts/electron-dev.js"
+    "electron-dev": "node scripts/electron-dev.js",
+    "lint": "eslint --ext .js --ext .ts --ext .tsx ./; exit 0",
+    "lint:write": "eslint --ext .js --ext .ts --ext .tsx ./ --fix",
+    "prettier": "prettier --write ./**/*.{tsx,ts,js}"
+  },
+  "lint-staged": {
+    "*.(js|tsx|ts)": [
+      "npm run lint:write",
+      "npm run prettier",
+      "git add"
+    ]
   },
   "build": {
     "appId": "com.electron.electron-with-create-react-app",
@@ -88,6 +98,8 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.13.0",
+    "husky": "^2.3.0",
+    "lint-staged": "^8.1.7",
     "prettier": "1.17.1",
     "wait-on": "^3.2.0",
     "webpack-node-externals": "^1.7.2"

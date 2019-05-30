@@ -40,7 +40,7 @@ const LootCard: React.FunctionComponent<ILootCard> = props => {
     console.log('======= lootId =======', lootId);
     console.log('======= LootCard =======', props);
     onClick(lootId);
-  }, [props]);
+  }, [lootId, props, onClick]);
 
   return (
     <StyledLootCard onClick={handleClick}>

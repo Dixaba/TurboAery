@@ -15,7 +15,7 @@ const LootProperty: React.FunctionComponent<ILootPropertyProps> = props => {
         <StyledLootProperty>{property}</StyledLootProperty>
       </>
     );
-  }, [props]);
+  }, [children, property]);
 
   return memoLootProperty;
 };
