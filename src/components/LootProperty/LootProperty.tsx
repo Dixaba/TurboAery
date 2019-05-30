@@ -10,10 +10,10 @@ const LootProperty: React.FunctionComponent<ILootPropertyProps> = props => {
 
   const memoLootProperty = useMemo(() => {
     return (
-      <StyledLootProperty>
-        <div className="loot-property">{children}</div>
-        <div className="loot-property">{property}</div>
-      </StyledLootProperty>
+      <>
+        <StyledLootProperty>{children}</StyledLootProperty>
+        <StyledLootProperty>{property}</StyledLootProperty>
+      </>
     );
   }, [props]);
 

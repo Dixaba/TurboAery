@@ -28,7 +28,7 @@ const renderCategories = (list: any[], fn: Function) =>
 const renderRecipeList = (list: any[]) => {
   console.log('======= RecipeList =======', ...list);
   return list.map((item: any) => (
-    <pre key={JSON.stringify(item)}>
+    <div key={JSON.stringify(item)}>
       {item.recipeName}
       <br />
       {JSON.stringify(item.outputs)}
@@ -36,7 +36,7 @@ const renderRecipeList = (list: any[]) => {
       {JSON.stringify(item.slots)}
       <br />
       <br />
-    </pre>
+    </div>
   ));
 };
 
@@ -90,14 +90,14 @@ const App: React.FunctionComponent = () => {
       </div>
       <br />
       <br />
-      <pre>
+      <div>
         <h4>RECIPES</h4>
         {Object.keys(recipesList).length ? (
           <>{renderRecipeList(recipesList)}</>
         ) : (
           'Waiting for list of recipes'
         )}
-      </pre>
+      </div>
     </>
   );
 };

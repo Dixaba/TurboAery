@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 
-const StyledLootProperty = styled.div`
-  font-family: monospace;
-`;
+const StyledLootProperty = styled.div``;
 
 export default StyledLootProperty;
