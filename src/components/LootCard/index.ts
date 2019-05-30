@@ -1,1 +1,1 @@
-export { default } from "./LootCard";
+export { default } from './LootCard';
