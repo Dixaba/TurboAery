@@ -13,12 +13,13 @@
     "electron-dev": "node scripts/electron-dev.js",
     "lint": "eslint --ext .js --ext .ts --ext .tsx ./; exit 0",
     "lint:write": "eslint --ext .js --ext .ts --ext .tsx ./ --fix",
-    "prettier": "prettier --write ./**/*.{tsx,ts,js}"
+    "pretty-quick": "pretty-quick --pattern \"**/*.*(js|ts|tsx)\"",
+    "pretty-quick-staged": "pretty-quick --staged --pattern \"**/*.*(js|ts|tsx)\""
   },
   "lint-staged": {
     "*.(js|tsx|ts)": [
       "npm run lint:write",
-      "npm run prettier",
+      "npm run pretty-quick-staged",
       "git add"
     ]
   },
@@ -100,7 +101,8 @@
     "eslint-plugin-react": "^7.13.0",
     "husky": "^2.3.0",
     "lint-staged": "^8.1.7",
-    "prettier": "1.17.1",
+    "prettier": "^1.17.1",
+    "pretty-quick": "^1.11.0",
     "wait-on": "^3.2.0",
     "webpack-node-externals": "^1.7.2"
   },
