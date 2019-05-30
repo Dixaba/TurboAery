@@ -1,1 +1,1 @@
-export { default } from './LootProperty';
+export { default } from "./LootProperty";

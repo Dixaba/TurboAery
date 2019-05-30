@@ -1,8 +1,14 @@
-import React, { memo, useCallback } from 'react';
-import './LootCard.css'
-import LootProperty from '../LootProperty';
+import React, { memo, useCallback } from "react";
+import LootProperty from "../LootProperty";
+import { StyledLootCard } from "./LootCard.styled";
 
-type TLootRarity = '' | 'DEFAULT' | 'EPIC' | 'LEGENDARY' | 'MYTHIC' | 'ULTIMATE';
+type TLootRarity =
+  | ""
+  | "DEFAULT"
+  | "EPIC"
+  | "LEGENDARY"
+  | "MYTHIC"
+  | "ULTIMATE";
 
 interface ILootCard {
   itemDesc: string;
@@ -20,29 +26,36 @@ interface ILootCard {
   onClick(e: string): string;
 }
 
-const LootCard: React.FunctionComponent<ILootCard> = (props) => {
-
+const LootCard: React.FunctionComponent<ILootCard> = props => {
   const handleClick = useCallback(() => {
-    console.log('======= lootId =======', props.lootId);
-    console.log('======= LootCard =======', props);
-    props.onClick(props.lootId)
+    console.log("======= lootId =======", props.lootId);
+    console.log("======= LootCard =======", props);
+    props.onClick(props.lootId);
   }, [props]);
 
   return (
-    <div className='loot-card' onClick={handleClick}>
+    <StyledLootCard onClick={handleClick}>
       <LootProperty property={props.itemDesc}>Название</LootProperty>
       <LootProperty property={props.count}>Количество осколков</LootProperty>
       <LootProperty property={props.itemStatus}>Есть в коллекции</LootProperty>
       <LootProperty property={props.type}>Тип</LootProperty>
       <LootProperty property={props.value}>Стоимость в магазине</LootProperty>
-      <LootProperty property={props.disenchantValue}>Стоимость распыления</LootProperty>
-      <LootProperty property={props.upgradeEssenceValue}>Стоимость улучшения</LootProperty>
+      <LootProperty property={props.disenchantValue}>
+        Стоимость распыления
+      </LootProperty>
+      <LootProperty property={props.upgradeEssenceValue}>
+        Стоимость улучшения
+      </LootProperty>
       <LootProperty property={props.storeItemId}>ID в магазине</LootProperty>
-      <LootProperty property={props.parentItemStatus}>Есть ли соответствующий чемпион</LootProperty>
+      <LootProperty property={props.parentItemStatus}>
+        Есть ли соответствующий чемпион
+      </LootProperty>
       <LootProperty property={props.rarity}>Редкость образа</LootProperty>
-      <LootProperty property={props.parentStoreItemId}>ID чемпиона</LootProperty>
-    </div >
-  )
-}
+      <LootProperty property={props.parentStoreItemId}>
+        ID чемпиона
+      </LootProperty>
+    </StyledLootCard>
+  );
+};
 
 export default memo(LootCard);

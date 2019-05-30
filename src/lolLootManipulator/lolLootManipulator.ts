@@ -1,12 +1,25 @@
-import axios from 'axios';
-import memoize from 'lodash/memoize';
-const { Kayn } = require('kayn');
+import axios from "axios";
+import memoize from "lodash/memoize";
+const { Kayn } = require("kayn");
 
 // TODO: extract interfaces to external file
 
-type TLootRarity = '' | 'DEFAULT' | 'EPIC' | 'LEGENDARY' | 'MYTHIC' | 'ULTIMATE';
+type TLootRarity =
+  | ""
+  | "DEFAULT"
+  | "EPIC"
+  | "LEGENDARY"
+  | "MYTHIC"
+  | "ULTIMATE";
 
-type TLootDisplayCategories = '' | 'CHAMPION' | 'CHEST' | 'EMOTE' | 'SKIN' | 'SUMMONERICON' | 'WARDSKIN';
+type TLootDisplayCategories =
+  | ""
+  | "CHAMPION"
+  | "CHEST"
+  | "EMOTE"
+  | "SKIN"
+  | "SUMMONERICON"
+  | "WARDSKIN";
 
 interface ILootItem {
   asset: string;
@@ -75,21 +88,21 @@ interface ILootRecipe {
   requirementText: string;
   slots: ILootRecipeSlots[];
   type: string;
-  actionType: string,
-  enabled: boolean,
-  essenceQuantity: number,
-  essenceType: string,
-  name: string,
-  recipeContextMenuAction: string,
-  recipeDescription: string,
-  requiredOthers: string,
-  requiredOthersCount: number,
-  requiredOthersName: string,
-  requiredTokens: string
+  actionType: string;
+  enabled: boolean;
+  essenceQuantity: number;
+  essenceType: string;
+  name: string;
+  recipeContextMenuAction: string;
+  recipeDescription: string;
+  requiredOthers: string;
+  requiredOthersCount: number;
+  requiredOthersName: string;
+  requiredTokens: string;
 }
 
 interface ILootListByCategory {
-  '': ILootItem[];
+  "": ILootItem[];
   CHAMPION: ILootItem[];
   CHEST: ILootItem[];
   EMOTE: ILootItem[];
@@ -117,12 +130,12 @@ interface IRequestConfig {
 }
 
 interface ILCUConnectionData {
-  protocol: 'https';
-  address: '127.0.0.1';
+  protocol: "https";
+  address: "127.0.0.1";
   port: number;
-  username: 'riot';
+  username: "riot";
   password: string;
-};
+}
 
 class LolLootManipulator implements ILolLootManipulator {
   public lootList: ILootItem[] = [];
@@ -138,40 +151,47 @@ class LolLootManipulator implements ILolLootManipulator {
         password
       },
       baseURL: `${protocol}://${address}:${port}`
-    }
+    };
     this.riotAPIKey = riotAPIConfig;
-  }
+  };
 
   getRegion = memoize(async () => {
-    const response = await axios.get<string>('/lol-platform-config/v1/namespaces/LoginDataPacket/platformId', this.requestConfig);
+    const response = await axios.get<string>(
+      "/lol-platform-config/v1/namespaces/LoginDataPacket/platformId",
+      this.requestConfig
+    );
     const region = response.data;
-    if (region === 'KR')
-      throw new Error('Korea is forbidden.' +
-        '\nFor more information visit ' +
-        'https://www.riotgames.com/en/DevRel/changes-to-the-lcu-api-policy');
+    if (region === "KR")
+      throw new Error(
+        "Korea is forbidden." +
+          "\nFor more information visit " +
+          "https://www.riotgames.com/en/DevRel/changes-to-the-lcu-api-policy"
+      );
     this.kayn = Kayn(this.riotAPIKey)({
       region: region.toLocaleLowerCase(),
-      locale: 'ru_RU', // hardcoded for now TODO: get locale from region string
+      locale: "ru_RU" // hardcoded for now TODO: get locale from region string
     });
-    this.kayn.DDragon.Champion.getDataById('Tristana') // test kayn and DDragon
-      .callback(console.log)
-  })
+    this.kayn.DDragon.Champion.getDataById("Tristana") // test kayn and DDragon
+      .callback(console.log);
+  });
 
   getLootList = async (refresh = true): Promise<ILootItem[]> => {
     if (refresh) {
       try {
-        this.lootList = (await axios.get<ILootItem[]>('/lol-loot/v1/player-loot', this.requestConfig)).data;
-      }
-      catch (error) {
+        this.lootList = (await axios.get<ILootItem[]>(
+          "/lol-loot/v1/player-loot",
+          this.requestConfig
+        )).data;
+      } catch (error) {
         throw new Error(error.message);
       }
     }
     return this.lootList;
-  }
+  };
 
   getLootListByCategory = () => {
     const result: ILootListByCategory = {
-      '': [],
+      "": [],
       CHAMPION: [],
       CHEST: [],
       EMOTE: [],
@@ -180,25 +200,32 @@ class LolLootManipulator implements ILolLootManipulator {
       WARDSKIN: []
     };
     return this.lootList.reduce((acc, item) => {
-      acc[item.displayCategories].push(item)
+      acc[item.displayCategories].push(item);
       return acc;
     }, result);
-  }
+  };
 
-  getRecipesList = memoize(async (lootId: string): Promise<ILootRecipe[]> => {
-    let fullRecipeData = [];
-    try {
-      const recipes = await axios.get<ILootRecipe[]>(`/lol-loot/v1/recipes/initial-item/${lootId}`, this.requestConfig);
-      const contextMenu = await axios.get<ILootRecipe[]>(`/lol-loot/v1/player-loot/${lootId}/context-menu	`, this.requestConfig);
-      for (let i = 0; i < recipes.data.length; i++) {
-        fullRecipeData[i] = { ...recipes.data[i], ...contextMenu.data[i] }
+  getRecipesList = memoize(
+    async (lootId: string): Promise<ILootRecipe[]> => {
+      let fullRecipeData = [];
+      try {
+        const recipes = await axios.get<ILootRecipe[]>(
+          `/lol-loot/v1/recipes/initial-item/${lootId}`,
+          this.requestConfig
+        );
+        const contextMenu = await axios.get<ILootRecipe[]>(
+          `/lol-loot/v1/player-loot/${lootId}/context-menu	`,
+          this.requestConfig
+        );
+        for (let i = 0; i < recipes.data.length; i++) {
+          fullRecipeData[i] = { ...recipes.data[i], ...contextMenu.data[i] };
+        }
+      } catch (error) {
+        throw new Error(error.message);
       }
+      return fullRecipeData;
     }
-    catch (error) {
-      throw new Error(error.message);
-    }
-    return fullRecipeData;
-  });
+  );
 }
 
 const lolLootManipulator = new LolLootManipulator();
