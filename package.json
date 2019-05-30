@@ -24,15 +24,17 @@
     ]
   },
   "build": {
-    "appId": "com.electron.electron-with-create-react-app",
+    "appId": "com.dixaba.turboaery",
     "files": [
       "build/**/*",
       "node_modules/**/*"
     ],
     "win": {
+      "icon": "icon.ico",
       "target": "zip"
     },
     "mac": {
+      "icon": "icon.icns",
       "target": "zip"
     },
     "directories": {
