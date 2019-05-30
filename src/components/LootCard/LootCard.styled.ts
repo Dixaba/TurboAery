@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const StyledLootCard = styled.div`
   border: 1px solid #8e8e8e;
@@ -13,3 +13,5 @@ export const StyledLootCard = styled.div`
     border: 1px solid #aeaeae;
   }
 `;
+
+export default StyledLootCard;

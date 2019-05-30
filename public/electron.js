@@ -1,16 +1,18 @@
-const { app, BrowserWindow } = require("electron");
-const path = require("path");
-const isDev = require("electron-is-dev");
-const os = require("os");
+const { app, BrowserWindow } = require('electron');
+const path = require('path');
+const isDev = require('electron-is-dev');
+const os = require('os');
+
 let apikey;
 
 const { PORT = 3000 } = process.env;
 
 try {
-  apikey = require("./apikey");
+  // eslint-disable-next-line global-require
+  apikey = require('./apikey');
 } catch (error) {
   console.warn(error);
-  console.warn("Please provide correct apikey.js");
+  console.warn('Please provide correct apikey.js');
 }
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -18,7 +20,7 @@ try {
 let win;
 
 // Allow Electron work with unsafe SSL certificates
-app.commandLine.appendSwitch("--ignore-certificate-errors");
+app.commandLine.appendSwitch('--ignore-certificate-errors');
 
 function createWindow() {
   // Create the browser window.
@@ -36,11 +38,11 @@ function createWindow() {
     BrowserWindow.addDevToolsExtension(
       path.join(
         os.homedir(),
-        "/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0"
+        '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0'
       )
     );
   } catch {
-    console.warn("React Dev tools not found");
+    console.warn('React Dev tools not found');
   }
 
   win.maximize();
@@ -48,9 +50,7 @@ function createWindow() {
   global.apikey = apikey;
 
   win.loadURL(
-    isDev
-      ? `http://localhost:${PORT}`
-      : `file://${path.join(__dirname, "../build/index.html")}`
+    isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, '../build/index.html')}`
   );
 
   // Open the DevTools.
@@ -59,7 +59,7 @@ function createWindow() {
   }
 
   // Emitted when the window is closed.
-  win.on("closed", () => {
+  win.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -70,18 +70,18 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+app.on('ready', createWindow);
 
 // Quit when all windows are closed.
-app.on("window-all-closed", () => {
+app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== "darwin") {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-app.on("activate", () => {
+app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (win === null) {

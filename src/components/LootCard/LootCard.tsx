@@ -1,14 +1,8 @@
-import React, { memo, useCallback } from "react";
-import LootProperty from "../LootProperty";
-import { StyledLootCard } from "./LootCard.styled";
+import React, { memo, useCallback } from 'react';
+import LootProperty from '../LootProperty';
+import { StyledLootCard } from './LootCard.styled';
 
-type TLootRarity =
-  | ""
-  | "DEFAULT"
-  | "EPIC"
-  | "LEGENDARY"
-  | "MYTHIC"
-  | "ULTIMATE";
+type TLootRarity = '' | 'DEFAULT' | 'EPIC' | 'LEGENDARY' | 'MYTHIC' | 'ULTIMATE';
 
 interface ILootCard {
   itemDesc: string;
@@ -27,33 +21,40 @@ interface ILootCard {
 }
 
 const LootCard: React.FunctionComponent<ILootCard> = props => {
+  const {
+    itemDesc,
+    count,
+    itemStatus,
+    type,
+    value,
+    disenchantValue,
+    upgradeEssenceValue,
+    storeItemId,
+    parentItemStatus,
+    rarity,
+    parentStoreItemId,
+    lootId,
+    onClick
+  } = props;
   const handleClick = useCallback(() => {
-    console.log("======= lootId =======", props.lootId);
-    console.log("======= LootCard =======", props);
-    props.onClick(props.lootId);
+    console.log('======= lootId =======', lootId);
+    console.log('======= LootCard =======', props);
+    onClick(lootId);
   }, [props]);
 
   return (
     <StyledLootCard onClick={handleClick}>
-      <LootProperty property={props.itemDesc}>Название</LootProperty>
-      <LootProperty property={props.count}>Количество осколков</LootProperty>
-      <LootProperty property={props.itemStatus}>Есть в коллекции</LootProperty>
-      <LootProperty property={props.type}>Тип</LootProperty>
-      <LootProperty property={props.value}>Стоимость в магазине</LootProperty>
-      <LootProperty property={props.disenchantValue}>
-        Стоимость распыления
-      </LootProperty>
-      <LootProperty property={props.upgradeEssenceValue}>
-        Стоимость улучшения
-      </LootProperty>
-      <LootProperty property={props.storeItemId}>ID в магазине</LootProperty>
-      <LootProperty property={props.parentItemStatus}>
-        Есть ли соответствующий чемпион
-      </LootProperty>
-      <LootProperty property={props.rarity}>Редкость образа</LootProperty>
-      <LootProperty property={props.parentStoreItemId}>
-        ID чемпиона
-      </LootProperty>
+      <LootProperty property={itemDesc}>Название</LootProperty>
+      <LootProperty property={count}>Количество осколков</LootProperty>
+      <LootProperty property={itemStatus}>Есть в коллекции</LootProperty>
+      <LootProperty property={type}>Тип</LootProperty>
+      <LootProperty property={value}>Стоимость в магазине</LootProperty>
+      <LootProperty property={disenchantValue}>Стоимость распыления</LootProperty>
+      <LootProperty property={upgradeEssenceValue}>Стоимость улучшения</LootProperty>
+      <LootProperty property={storeItemId}>ID в магазине</LootProperty>
+      <LootProperty property={parentItemStatus}>Есть ли соответствующий чемпион</LootProperty>
+      <LootProperty property={rarity}>Редкость образа</LootProperty>
+      <LootProperty property={parentStoreItemId}>ID чемпиона</LootProperty>
     </StyledLootCard>
   );
 };

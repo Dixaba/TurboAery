@@ -1,1 +1,1 @@
-export { default } from "./lolLootManipulator";
+export { default } from './lolLootManipulator';

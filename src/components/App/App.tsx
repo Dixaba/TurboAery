@@ -1,16 +1,12 @@
-import React, {
-  useState,
-  useEffect,
-  Fragment,
-  useCallback,
-  useMemo
-} from "react";
-import lolLootManipulator from "../../lolLootManipulator";
-import LootCard from "../LootCard";
-import GlobalStyle from "./globalStyle";
-const LCUConnector = require("lcu-connector");
-const { remote } = require("electron");
-const apikey = remote.getGlobal("apikey");
+import React, { useState, useEffect, Fragment, useCallback, useMemo } from 'react';
+import lolLootManipulator from '../../lolLootManipulator';
+import LootCard from '../LootCard';
+import GlobalStyle from './globalStyle';
+
+const LCUConnector = require('lcu-connector');
+const { remote } = require('electron');
+
+const apikey = remote.getGlobal('apikey');
 
 console.log(apikey); // it works
 
@@ -30,7 +26,7 @@ const renderCategories = (list: any[], fn: Function) =>
   ));
 
 const renderRecipeList = (list: any[]) => {
-  console.log("======= RecipeList =======", ...list);
+  console.log('======= RecipeList =======', ...list);
   return list.map((item: any) => (
     <pre key={JSON.stringify(item)}>
       {item.recipeName}
@@ -49,7 +45,7 @@ const App: React.FunctionComponent = () => {
   const [recipesList, setRecipesList] = useState<any>({});
 
   useEffect(() => {
-    connector.on("connect", (data: any) => {
+    connector.on('connect', (data: any) => {
       lolLootManipulator.setConfig(data, apikey);
       lolLootManipulator
         .getRegion()
@@ -90,11 +86,7 @@ const App: React.FunctionComponent = () => {
     <>
       {memoGlobalStyle}
       <div>
-        {lootList ? (
-          <>{renderCategories(lootList, handleClick)}</>
-        ) : (
-          "Waiting for list of loot"
-        )}
+        {lootList ? <>{renderCategories(lootList, handleClick)}</> : 'Waiting for list of loot'}
       </div>
       <br />
       <br />
@@ -103,7 +95,7 @@ const App: React.FunctionComponent = () => {
         {Object.keys(recipesList).length ? (
           <>{renderRecipeList(recipesList)}</>
         ) : (
-          "Waiting for list of recipes"
+          'Waiting for list of recipes'
         )}
       </pre>
     </>
