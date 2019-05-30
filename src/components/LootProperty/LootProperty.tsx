@@ -1,22 +1,21 @@
-import React, { useMemo } from 'react';
-import './LootProperty.css';
+import React, { useMemo } from "react";
+import StyledLootProperty from "./LootProperty.styled";
 
 interface ILootPropertyProps {
   property: string | number;
 }
 
-const LootProperty: React.FunctionComponent<ILootPropertyProps> = (props) => {
-
+const LootProperty: React.FunctionComponent<ILootPropertyProps> = props => {
   const memoLootProperty = useMemo(() => {
     return (
-      <>
-        <div className='loot-property'>{props.children}:</div>
-        <div className='loot-property'>{props.property}</div>
-      </>
-    )
-  }, [props])
+      <StyledLootProperty>
+        <div className="loot-property">{props.children}:</div>
+        <div className="loot-property">{props.property}</div>
+      </StyledLootProperty>
+    );
+  }, [props]);
 
   return memoLootProperty;
-}
+};
 
 export default LootProperty;
