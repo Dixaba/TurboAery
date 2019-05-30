@@ -19,9 +19,11 @@
       "node_modules/**/*"
     ],
     "win": {
+      "icon": "icon.ico",
       "target": "zip"
     },
     "mac": {
+      "icon": "icon.icns",
       "target": "zip"
     },
     "directories": {
