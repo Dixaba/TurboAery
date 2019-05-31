@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import StyledLootProperty from './LootProperty.styled';
 
-interface ILootPropertyProps {
+interface LootPropertyProps {
   property: string | number;
 }
 
-const LootProperty: React.FunctionComponent<ILootPropertyProps> = props => {
+const LootProperty: React.FunctionComponent<LootPropertyProps> = (props): React.ReactElement => {
   const { children, property } = props;
 
   const memoLootProperty = useMemo(() => {

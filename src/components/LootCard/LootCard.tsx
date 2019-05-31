@@ -2,9 +2,9 @@ import React, { memo, useCallback } from 'react';
 import LootProperty from '../LootProperty';
 import { StyledLootCard } from './LootCard.styled';
 
-type TLootRarity = '' | 'DEFAULT' | 'EPIC' | 'LEGENDARY' | 'MYTHIC' | 'ULTIMATE';
+type LootRarity = '' | 'DEFAULT' | 'EPIC' | 'LEGENDARY' | 'MYTHIC' | 'ULTIMATE';
 
-interface ILootCard {
+interface LootCard {
   itemDesc: string;
   count: number;
   itemStatus: string;
@@ -14,13 +14,13 @@ interface ILootCard {
   upgradeEssenceValue: number;
   storeItemId: number;
   parentItemStatus: string;
-  rarity: TLootRarity;
+  rarity: LootRarity;
   parentStoreItemId: number;
   lootId: string;
   onClick(e: string): string;
 }
 
-const LootCard: React.FunctionComponent<ILootCard> = props => {
+const LootCard: React.FunctionComponent<LootCard> = (props): React.ReactElement => {
   const {
     itemDesc,
     count,

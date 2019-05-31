@@ -1,5 +1,6 @@
 import axios from 'axios';
 import memoize from 'lodash/memoize';
+import { MemoizedFunction } from 'lodash';
 
 const { Kayn } = require('kayn');
 
@@ -16,7 +17,7 @@ type TLootDisplayCategories =
   | 'SUMMONERICON'
   | 'WARDSKIN';
 
-interface ILootItem {
+interface LootItem {
   asset: string;
   count: number;
   disenchantLootName: string;
@@ -52,23 +53,23 @@ interface ILootItem {
   value: number;
 }
 
-interface ILootRecipeSlots {
+interface LootRecipeSlots {
   lootIds: string[];
   quantity: number;
   slotNumber: number;
 }
 
-interface ILootRecipeOutputs {
+interface LootRecipeOutputs {
   lootName: string;
   quantity: number;
 }
 
-interface ILootRecipeMetadata {
+interface LootRecipeMetadata {
   lootName: string;
   quantity: number;
 }
 
-interface ILootRecipe {
+interface LootRecipe {
   contextMenuText: string;
   crafterName: string;
   description: string;
@@ -76,12 +77,12 @@ interface ILootRecipe {
   imagePath: string;
   introVideoPath: string;
   loopVideoPath: string;
-  metadata: ILootRecipeMetadata;
-  outputs: ILootRecipeOutputs[];
+  metadata: LootRecipeMetadata;
+  outputs: LootRecipeOutputs[];
   outroVideoPath: string;
   recipeName: string;
   requirementText: string;
-  slots: ILootRecipeSlots[];
+  slots: LootRecipeSlots[];
   type: string;
   actionType: string;
   enabled: boolean;
@@ -96,27 +97,27 @@ interface ILootRecipe {
   requiredTokens: string;
 }
 
-interface ILootListByCategory {
-  '': ILootItem[];
-  CHAMPION: ILootItem[];
-  CHEST: ILootItem[];
-  EMOTE: ILootItem[];
-  SKIN: ILootItem[];
-  SUMMONERICON: ILootItem[];
-  WARDSKIN: ILootItem[];
-  [index: string]: ILootItem[];
+interface LootListByCategory {
+  '': LootItem[];
+  CHAMPION: LootItem[];
+  CHEST: LootItem[];
+  EMOTE: LootItem[];
+  SKIN: LootItem[];
+  SUMMONERICON: LootItem[];
+  WARDSKIN: LootItem[];
+  [index: string]: LootItem[];
 }
 
-interface ILolLootManipulator {
-  lootList: ILootItem[];
-  getLootList(refresh: boolean): Promise<ILootItem[]>;
-  getRecipesList(lootId: string): Promise<ILootRecipe[]>;
-  getLootListByCategory(): ILootListByCategory;
-  getRegion(): void;
-  setConfig(data: ILCUConnectionData, riotAPIKey: string): void;
+interface LolLootManipulator {
+  lootList: LootItem[];
+  getLootList(refresh?: boolean): Promise<LootItem[]>;
+  getRecipesList: ((lootId: string) => Promise<LootRecipe[]>) & MemoizedFunction;
+  getLootListByCategory(): LootListByCategory;
+  getRegion: (() => Promise<void>) & MemoizedFunction;
+  setConfig(data: LCUConnectionData, riotAPIKey: string): void;
 }
 
-interface IRequestConfig {
+interface RequestConfig {
   auth: {
     username: string;
     password: string;
@@ -124,7 +125,7 @@ interface IRequestConfig {
   baseURL: string;
 }
 
-interface ILCUConnectionData {
+interface LCUConnectionData {
   protocol: 'https';
   address: '127.0.0.1';
   port: number;
@@ -132,16 +133,16 @@ interface ILCUConnectionData {
   password: string;
 }
 
-class LolLootManipulator implements ILolLootManipulator {
-  public lootList: ILootItem[] = [];
+class LolLootManipulator implements LolLootManipulator {
+  public lootList: LootItem[] = [];
 
-  private requestConfig?: IRequestConfig;
+  private requestConfig?: RequestConfig;
 
   private riotAPIKey?: string;
 
   private kayn: any = null;
 
-  setConfig = (data: ILCUConnectionData, riotAPIConfig: string) => {
+  public setConfig = (data: LCUConnectionData, riotAPIConfig: string): void => {
     const { username, password, protocol, address, port } = data;
     this.requestConfig = {
       auth: {
@@ -153,30 +154,32 @@ class LolLootManipulator implements ILolLootManipulator {
     this.riotAPIKey = riotAPIConfig;
   };
 
-  getRegion = memoize(async () => {
-    const response = await axios.get<string>(
-      '/lol-platform-config/v1/namespaces/LoginDataPacket/platformId',
-      this.requestConfig
-    );
-    const region = response.data;
-    if (region === 'KR')
-      throw new Error(
-        'Korea is forbidden.' +
-          '\nFor more information visit ' +
-          'https://www.riotgames.com/en/DevRel/changes-to-the-lcu-api-policy'
+  public getRegion = memoize(
+    async (): Promise<void> => {
+      const response = await axios.get<string>(
+        '/lol-platform-config/v1/namespaces/LoginDataPacket/platformId',
+        this.requestConfig
       );
-    this.kayn = Kayn(this.riotAPIKey)({
-      region: region.toLocaleLowerCase(),
-      locale: 'ru_RU' // hardcoded for now TODO: get locale from region string
-    });
-    this.kayn.DDragon.Champion.getDataById('Tristana') // test kayn and DDragon
-      .callback(console.log);
-  });
+      const region = response.data;
+      if (region === 'KR')
+        throw new Error(
+          'Korea is forbidden.' +
+            '\nFor more information visit ' +
+            'https://www.riotgames.com/en/DevRel/changes-to-the-lcu-api-policy'
+        );
+      this.kayn = Kayn(this.riotAPIKey)({
+        region: region.toLocaleLowerCase(),
+        locale: 'ru_RU' // hardcoded for now TODO: get locale from region string
+      });
+      this.kayn.DDragon.Champion.getDataById('Tristana') // test kayn and DDragon
+        .callback(console.log);
+    }
+  );
 
-  getLootList = async (refresh = true): Promise<ILootItem[]> => {
+  public getLootList = async (refresh = true): Promise<LootItem[]> => {
     if (refresh) {
       try {
-        this.lootList = (await axios.get<ILootItem[]>(
+        this.lootList = (await axios.get<LootItem[]>(
           '/lol-loot/v1/player-loot',
           this.requestConfig
         )).data;
@@ -187,8 +190,8 @@ class LolLootManipulator implements ILolLootManipulator {
     return this.lootList;
   };
 
-  getLootListByCategory = () => {
-    const result: ILootListByCategory = {
+  public getLootListByCategory = (): LootListByCategory => {
+    const result: LootListByCategory = {
       '': [],
       CHAMPION: [],
       CHEST: [],
@@ -197,21 +200,21 @@ class LolLootManipulator implements ILolLootManipulator {
       SUMMONERICON: [],
       WARDSKIN: []
     };
-    return this.lootList.reduce((acc, item) => {
+    return this.lootList.reduce((acc, item): LootListByCategory => {
       acc[item.displayCategories].push(item);
       return acc;
     }, result);
   };
 
-  getRecipesList = memoize(
-    async (lootId: string): Promise<ILootRecipe[]> => {
+  public getRecipesList = memoize(
+    async (lootId: string): Promise<LootRecipe[]> => {
       const fullRecipeData = [];
       try {
-        const recipes = await axios.get<ILootRecipe[]>(
+        const recipes = await axios.get<LootRecipe[]>(
           `/lol-loot/v1/recipes/initial-item/${lootId}`,
           this.requestConfig
         );
-        const contextMenu = await axios.get<ILootRecipe[]>(
+        const contextMenu = await axios.get<LootRecipe[]>(
           `/lol-loot/v1/player-loot/${lootId}/context-menu	`,
           this.requestConfig
         );

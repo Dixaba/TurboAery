@@ -90,11 +90,13 @@
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
     "styled-components": "^4.2.1",
-    "typescript": "^3.5.1"
+    "typescript": "3.4.5"
   },
   "devDependencies": {
     "@rescripts/cli": "0.0.10",
     "@rescripts/rescript-env": "0.0.10",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
     "babel-plugin-styled-components": "^1.10.0",
     "concurrently": "^4.1.0",
     "electron": "^5.0.2",

@@ -1,4 +1,12 @@
-import React, { useState, useEffect, Fragment, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  Fragment,
+  useCallback,
+  useMemo,
+  ReactNode,
+  ReactElement
+} from 'react';
 import lolLootManipulator from '../../lolLootManipulator';
 import LootCard from '../LootCard';
 import GlobalStyle from './globalStyle';
@@ -14,10 +22,10 @@ console.log(apikey); // it works
 
 const connector = new LCUConnector();
 
-const renderList = (list: any[], fn: Function) =>
+const renderList = (list: any[], fn: Function): ReactNode[] =>
   list.map(item => <LootCard key={item.lootId} {...item} onClick={fn} />);
 
-const renderCategories = (list: any[], fn: Function) =>
+const renderCategories = (list: any[], fn: Function): ReactNode[] =>
   Object.entries(list).map(item => (
     <Fragment key={item[0]}>
       <h4>{item[0]}</h4>
@@ -25,7 +33,7 @@ const renderCategories = (list: any[], fn: Function) =>
     </Fragment>
   ));
 
-const renderRecipeList = (list: any[]) => {
+const renderRecipeList = (list: any[]): ReactNode[] => {
   console.log('======= RecipeList =======', ...list);
   return list.map((item: any) => (
     <div key={JSON.stringify(item)}>
@@ -40,7 +48,7 @@ const renderRecipeList = (list: any[]) => {
   ));
 };
 
-const App: React.FunctionComponent = () => {
+const App: React.FunctionComponent = (): ReactElement => {
   const [lootList, setLootList] = useState<any>(null);
   const [recipesList, setRecipesList] = useState<any>({});
 
