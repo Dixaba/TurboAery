@@ -23,6 +23,11 @@
       "git add"
     ]
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "build": {
     "appId": "com.dixaba.turboaery",
     "files": [
