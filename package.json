@@ -8,8 +8,8 @@
     "build": "rescripts build",
     "test": "rescripts test",
     "eject": "rescripts eject",
-    "pack": "rescripts build && electron-builder -wm --dir",
-    "dist": "rescripts build && electron-builder -wm",
+    "build-app": "rescripts build && electron-builder --dir",
+    "pack-app": "rescripts build && electron-builder",
     "electron-dev": "node scripts/electron-dev.js",
     "lint": "eslint --ext .js --ext .ts --ext .tsx ./; exit 0",
     "lint:write": "eslint --ext .js --ext .ts --ext .tsx ./ --fix",
@@ -29,6 +29,8 @@
     }
   },
   "build": {
+    "productName": "TurboAery",
+    "copyright": "Dixaba",
     "appId": "com.dixaba.turboaery",
     "files": [
       "build/**/*",
@@ -36,11 +38,19 @@
     ],
     "win": {
       "icon": "icon.ico",
-      "target": "zip"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
     },
     "mac": {
       "icon": "icon.icns",
-      "target": "zip"
+      "category": "public.app-category.utilities"
     },
     "directories": {
       "buildResources": "public"
@@ -58,9 +68,6 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Dixaba/TurboAery/issues"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "babel": {
     "presets": [
