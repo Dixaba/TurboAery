@@ -1,6 +1,6 @@
 {
   "name": "turboaery",
-  "version": "0.0.3",
+  "version": "0.0.3-EEspecial",
   "description": "Assistant tool for League players",
   "main": "public/electron.js",
   "scripts": {
@@ -8,8 +8,8 @@
     "build": "rescripts build",
     "test": "rescripts test",
     "eject": "rescripts eject",
-    "build-app": "rescripts build && electron-builder --dir",
-    "pack-app": "rescripts build && electron-builder",
+    "build-app": "rescripts build && electron-builder -wm --dir",
+    "pack-app": "rescripts build && electron-builder -wm",
     "electron-dev": "node scripts/electron-dev.js",
     "lint": "eslint --ext .js --ext .ts --ext .tsx ./; exit 0",
     "lint:write": "eslint --ext .js --ext .ts --ext .tsx ./ --fix",
@@ -29,27 +29,18 @@
     }
   },
   "build": {
-    "productName": "TurboAery",
-    "copyright": "Dixaba",
-    "appId": "com.dixaba.turboaery",
+    "appId": "com.electron.electron-with-create-react-app",
     "files": [
       "build/**/*",
       "node_modules/**/*"
     ],
     "win": {
       "icon": "icon.ico",
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
-      ]
+      "target": "zip"
     },
     "mac": {
       "icon": "icon.icns",
-      "category": "public.app-category.utilities"
+      "target": "zip"
     },
     "directories": {
       "buildResources": "public"

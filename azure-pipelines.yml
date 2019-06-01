@@ -12,10 +12,12 @@ steps:
 
 - task: Bash@3
   inputs:
-    targetType: 'inline'
-    script: sed -i 's/place_key_here/$(apikey)/' apikey.js
-    workingDirectory: '$(Build.SourcesDirectory)/public'
-  displayName: 'API key insertion'
+    targetType: inline
+    script: |
+      echo "const apikey = '$(apikey)';" > apikey.js
+      echo "module.exports = apikey;" >> apikey.js
+    workingDirectory: $(Build.SourcesDirectory)/public
+  displayName: API key insertion
 
 - task: Bash@3
   inputs:
@@ -30,7 +32,7 @@ steps:
       -v ~/.cache/electron:/root/.cache/electron 
       -v ~/.cache/electron-builder:/root/.cache/electron-builder 
       electronuserland/builder:wine 
-      /bin/bash -c "yarn && yarn dist"
+      /bin/bash -c "yarn && yarn pack-app"
     workingDirectory: '$(Build.SourcesDirectory)'
   displayName: 'Build and create dist archives'
 
