@@ -115,6 +115,7 @@ interface LolLootManipulator {
   getLootListByCategory(): LootListByCategory;
   getRegion: (() => Promise<void>) & MemoizedFunction;
   setConfig(data: LCUConnectionData, riotAPIKey: string): void;
+  disenchant(lootId: string, count: number): Promise<void>;
 }
 
 interface RequestConfig {
@@ -167,12 +168,16 @@ class LolLootManipulator implements LolLootManipulator {
             '\nFor more information visit ' +
             'https://www.riotgames.com/en/DevRel/changes-to-the-lcu-api-policy'
         );
-      this.kayn = Kayn(this.riotAPIKey)({
-        region: region.toLocaleLowerCase(),
-        locale: 'ru_RU' // hardcoded for now TODO: get locale from region string
-      });
-      this.kayn.DDragon.Champion.getDataById('Tristana') // test kayn and DDragon
-        .callback(console.log);
+      try {
+        this.kayn = Kayn(this.riotAPIKey)({
+          region: region.toLocaleLowerCase(),
+          locale: 'ru_RU' // hardcoded for now TODO: get locale from region string
+        });
+        this.kayn.DDragon.Champion.getDataById('Tristana') // test kayn and DDragon
+          .callback(console.log);
+      } catch (error) {
+        console.warn(error);
+      }
     }
   );
 
@@ -227,6 +232,18 @@ class LolLootManipulator implements LolLootManipulator {
       return fullRecipeData;
     }
   );
+
+  public disenchant = async (lootId: string, count: number) => {
+    const extendedRequestConfig = {
+      ...this.requestConfig,
+      params: { repeat: count }
+    };
+    await axios.post(
+      `/lol-loot/v1/recipes/CHAMPION_RENTAL_disenchant/craft`,
+      [lootId],
+      this.requestConfig
+    );
+  };
 }
 
 const lolLootManipulator = new LolLootManipulator();

@@ -1,14 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  Fragment,
-  useCallback,
-  useMemo,
-  ReactNode,
-  ReactElement
-} from 'react';
+import React, { useState, useEffect, useCallback, useMemo, ReactElement } from 'react';
 import lolLootManipulator from '../../lolLootManipulator';
-import LootCard from '../LootCard';
 import GlobalStyle from './globalStyle';
 
 const LCUConnector = require('lcu-connector');
@@ -22,35 +13,9 @@ console.log(apikey); // it works
 
 const connector = new LCUConnector();
 
-const renderList = (list: any[], fn: Function): ReactNode[] =>
-  list.map(item => <LootCard key={item.lootId} {...item} onClick={fn} />);
-
-const renderCategories = (list: any[], fn: Function): ReactNode[] =>
-  Object.entries(list).map(item => (
-    <Fragment key={item[0]}>
-      <h4>{item[0]}</h4>
-      {renderList(item[1], fn)}
-    </Fragment>
-  ));
-
-const renderRecipeList = (list: any[]): ReactNode[] => {
-  console.log('======= RecipeList =======', ...list);
-  return list.map((item: any) => (
-    <div key={JSON.stringify(item)}>
-      {item.recipeName}
-      <br />
-      {JSON.stringify(item.outputs)}
-      <br />
-      {JSON.stringify(item.slots)}
-      <br />
-      <br />
-    </div>
-  ));
-};
-
 const App: React.FunctionComponent = (): ReactElement => {
-  const [lootList, setLootList] = useState<any>(null);
-  const [recipesList, setRecipesList] = useState<any>({});
+  const [lootList, setLootList] = useState<any>([]);
+  const [inProgress, setInProgress] = useState<boolean>(false);
 
   useEffect(() => {
     connector.on('connect', (data: any) => {
@@ -60,12 +25,15 @@ const App: React.FunctionComponent = (): ReactElement => {
         .then(async () => {
           try {
             await lolLootManipulator.getLootList();
+            console.log(lolLootManipulator.lootList);
           } catch (error) {
             console.log(error);
           }
-          const lootListByCategory = lolLootManipulator.getLootListByCategory();
+          const allChampions = lolLootManipulator.lootList.filter(
+            item => item.type === 'CHAMPION_RENTAL'
+          );
 
-          setLootList(lootListByCategory);
+          setLootList(allChampions);
         })
         .catch(error => {
           console.log(error);
@@ -77,35 +45,43 @@ const App: React.FunctionComponent = (): ReactElement => {
     };
   }, []);
 
-  const handleClick = useCallback(async (lootId: string) => {
-    let recipesListById;
+  const handleClick = useCallback(async () => {
+    setInProgress(true);
     try {
-      recipesListById = await lolLootManipulator.getRecipesList(lootId);
-      setRecipesList(recipesListById);
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const lootItem of lootList) {
+        lolLootManipulator.disenchant(lootItem.lootId, lootItem.count);
+      }
+      await lolLootManipulator.getLootList();
+      setLootList(lolLootManipulator.lootList);
     } catch (error) {
       console.warn(error);
-      setRecipesList({});
     }
-  }, []);
+    setInProgress(false);
+  }, [lootList]);
 
   const memoGlobalStyle = useMemo(() => <GlobalStyle />, []);
 
   return (
     <>
       {memoGlobalStyle}
+      <div>You got {lootList.length} champions</div>
+      <br />
       <div>
-        {lootList ? <>{renderCategories(lootList, handleClick)}</> : 'Waiting for list of loot'}
+        {lootList.map((item: any) => (
+          <div key={item.lootId}>
+            {item.count} {item.itemDesc}
+          </div>
+        ))}
       </div>
       <br />
       <br />
-      <div>
-        <h4>RECIPES</h4>
-        {Object.keys(recipesList).length ? (
-          <>{renderRecipeList(recipesList)}</>
-        ) : (
-          'Waiting for list of recipes'
-        )}
-      </div>
+      {lootList.length ? (
+        <button disabled={inProgress} onClick={handleClick}>
+          Disenchant {lootList.reduce((acc: number, item: any) => acc + item.count, 0)} champion
+          shards
+        </button>
+      ) : null}
     </>
   );
 };
