@@ -241,7 +241,7 @@ class LolLootManipulator implements LolLootManipulator {
     await axios.post(
       `/lol-loot/v1/recipes/CHAMPION_RENTAL_disenchant/craft`,
       [lootId],
-      this.requestConfig
+      extendedRequestConfig
     );
   };
 }
