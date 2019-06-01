@@ -25,7 +25,7 @@ app.commandLine.appendSwitch('--ignore-certificate-errors');
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
+    width: 400,
     height: 600,
     webPreferences: {
       nodeIntegration: true,
@@ -44,8 +44,6 @@ function createWindow() {
   } catch {
     console.warn('React Dev tools not found');
   }
-
-  win.maximize();
 
   global.apikey = apikey;
 
