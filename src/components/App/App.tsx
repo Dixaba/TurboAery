@@ -53,7 +53,7 @@ const App: React.FunctionComponent = (): ReactElement => {
         lolLootManipulator.disenchant(lootItem.lootId, lootItem.count);
       }
       await lolLootManipulator.getLootList();
-      setLootList(lolLootManipulator.lootList);
+      setLootList(lolLootManipulator.lootList.filter(item => item.type === 'CHAMPION_RENTAL'));
     } catch (error) {
       console.warn(error);
     }
