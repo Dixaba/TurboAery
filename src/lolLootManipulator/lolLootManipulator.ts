@@ -167,12 +167,16 @@ class LolLootManipulator implements LolLootManipulator {
             '\nFor more information visit ' +
             'https://www.riotgames.com/en/DevRel/changes-to-the-lcu-api-policy'
         );
-      this.kayn = Kayn(this.riotAPIKey)({
-        region: region.toLocaleLowerCase(),
-        locale: 'ru_RU' // hardcoded for now TODO: get locale from region string
-      });
-      this.kayn.DDragon.Champion.getDataById('Tristana') // test kayn and DDragon
-        .callback(console.log);
+      try {
+        this.kayn = Kayn(this.riotAPIKey)({
+          region: region.toLocaleLowerCase(),
+          locale: 'ru_RU' // hardcoded for now TODO: get locale from region string
+        });
+        this.kayn.DDragon.Champion.getDataById('Tristana') // test kayn and DDragon
+          .callback(console.log);
+      } catch (error) {
+        console.warn(error);
+      }
     }
   );
 
