@@ -5,66 +5,112 @@ trigger:
 
 pr: none
 
-pool:
-  vmImage: ubuntu-16.04
+jobs:
 
-steps:
+- job: win
+  pool:
+    vmImage: windows-2019
+  steps:
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: sed -i 's/place_key_here/$(apikey)/' apikey.js
-    workingDirectory: '$(Build.SourcesDirectory)/public'
-  displayName: 'API key insertion'
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        echo "const apikey = '$(apikey)';" > apikey.js
+        echo "module.exports = apikey;" >> apikey.js
+      workingDirectory: $(Build.SourcesDirectory)\public
+    displayName: API key insertion
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script:
-      docker run --rm -i 
-      --env-file <(env | grep -vE 'r|n' | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_') 
-      --env ELECTRON_CACHE="/root/.cache/electron" 
-      --env ELECTRON_BUILDER_CACHE="/root/.cache/electron-builder" 
-      -v ${PWD}:/project 
-      -v ${PWD##*/}-node-modules:/project/node_modules 
-      -v ~/.cache/electron:/root/.cache/electron 
-      -v ~/.cache/electron-builder:/root/.cache/electron-builder 
-      electronuserland/builder:wine 
-      /bin/bash -c "yarn && yarn dist"
-    workingDirectory: '$(Build.SourcesDirectory)'
-  displayName: 'Build and create dist archives'
+  - task: Bash@3
+    inputs:
+      targetType: inline
+      script: npm -v && npm i && npm run pack-app
+      workingDirectory: $(Build.SourcesDirectory)
+    displayName: Build and create dist archives
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: 'cp dist/*.zip $(Build.ArtifactStagingDirectory)'
-    workingDirectory: '$(Build.SourcesDirectory)'
-  displayName: 'Move built files'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)\dist
+      Contents: '*.exe'
+      targetFolder: $(System.ArtifactsDirectory)
+    displayName: Copy built files
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: 'awk -v N=2 ''/## v/&&--N<=0{exit}{print}'' changelog.md > $(Build.ArtifactStagingDirectory)/notes'
-    workingDirectory: '$(Build.SourcesDirectory)'
-  displayName: 'Changelog'
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: winbuild
+      targetPath: $(System.ArtifactsDirectory)
+    displayName: Share built files with another job
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
-      TAG=$(awk -v N=0 '/## v/&&++N==1{print}' changelog.md | sed 's/## //')
-      echo "##vso[task.setvariable variable=tag]$TAG"
-    workingDirectory: '$(Build.SourcesDirectory)'
-  displayName: 'Tag name'
+- job: mac
+  pool:
+    vmImage: macOS-10.14
+  dependsOn: win
+  steps:
 
-- task: GitHubRelease@0
-  displayName: 'GitHub release'
-  inputs:
-    gitHubConnection: 'github connection 1'
-    repositoryName: 'Dixaba/TurboAery'
-    tagSource: manual
-    tag: $(tag)  
-    releaseNotesFile: '$(Build.ArtifactStagingDirectory)/notes'
-    assets: '$(Build.ArtifactStagingDirectory)/*.zip'
-    addChangeLog: false
-    isPreRelease: true
+  - task: Bash@3
+    inputs:
+      targetType: inline
+      script: |
+        echo "const apikey = '$(apikey)';" > apikey.js
+        echo "module.exports = apikey;" >> apikey.js
+      workingDirectory: $(Build.SourcesDirectory)/public
+    displayName: API key insertion
+
+  - task: Bash@3
+    inputs:
+      targetType: inline
+      script: |
+        source ~/.bashrc
+        nvm install 12.3.1
+        nvm use --delete-prefix v12.3.1        
+        npm -v && npm i && npm run pack-app
+      workingDirectory: $(Build.SourcesDirectory)
+    displayName: Build and create dist archives
+
+  - task: Bash@3
+    inputs:
+      targetType: inline
+      script: |
+        TAG=$(awk -v N=0 '/## v/&&++N==1{print}' changelog.md | sed 's/## //')
+        echo "##vso[task.setvariable variable=tag]$TAG"
+      workingDirectory: $(Build.SourcesDirectory)
+    displayName: Tag name
+
+  - task: Bash@3
+    inputs:
+      targetType: inline
+      script: awk -v N=2 '/## v/&&--N<=0{exit}{print}' changelog.md > notes
+      workingDirectory: $(Build.SourcesDirectory)
+    displayName: Changelog
+
+  - task: DownloadPipelineArtifact@1
+    inputs:
+      artifactName: winbuild
+      downloadPath: '$(System.ArtifactsDirectory)'
+    displayName: Include Windows build
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)/dist
+      Contents: '*.zip'
+      targetFolder: $(System.ArtifactsDirectory)
+    displayName: Copy built zip
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)/dist
+      Contents: '*.dmg'
+      targetFolder: $(System.ArtifactsDirectory)
+    displayName: Copy built dmg
+
+  - task: GitHubRelease@0
+    inputs:
+      gitHubConnection: github connection 1
+      repositoryName: $(Build.Repository.Name)
+      tagSource: manual
+      tag: $(tag)  
+      releaseNotesFile: $(Build.SourcesDirectory)/notes
+      assets: $(System.ArtifactsDirectory)/*.*
+      addChangeLog: false
+      isPreRelease: true
+    displayName: GitHub release
